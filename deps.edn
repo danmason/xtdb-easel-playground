@@ -1,12 +1,20 @@
 {:mvn/repos {"ossrh-snapshots" {:url "https://s01.oss.sonatype.org/content/repositories/snapshots"}}
 
  :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+
+        ;; XTDB dependencies
         com.xtdb/xtdb-api {:mvn/version "2.0.0-SNAPSHOT"}
         com.xtdb/xtdb-http-client-clj {:mvn/version "2.0.0-SNAPSHOT"}
+
+        ;; Webserver dependencies
         metosin/reitit {:mvn/version "0.6.0"}
         ring/ring-jetty-adapter {:mvn/version "1.7.1"}
         hiccup/hiccup {:mvn/version "2.0.0-RC2"}
         dev.weavejester/medley {:mvn/version "1.7.0"}
-        cheshire/cheshire {:mvn/version "5.12.0"}}
- 
+        cheshire/cheshire {:mvn/version "5.12.0"}
+
+        ;; Logging
+        ch.qos.logback/logback-classic {:mvn/version "1.4.5"}
+        org.clojure/tools.logging {:mvn/version "1.2.4"}}
+
  :paths ["src" "resources"]}

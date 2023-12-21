@@ -1,5 +1,6 @@
 (ns server
   (:require [clojure.spec.alpha :as s]
+            [clojure.tools.logging :as log]
             [muuntaja.core :as m]
             [pages
              [main :as main]
@@ -20,7 +21,7 @@
 
 (defn save-canvas-info [request]
   (let [{:keys [canvasId image]} (get-in request [:parameters :body])]
-    (prn (format "Saving edits to canvas %s... " canvasId))
+    (log/info (format "Saving edits to canvas %s... " canvasId))
     (xt/submit-tx node [(xt/put :drawings {:xt/id canvasId
                                            :image-state image})])
     {:status 200
@@ -31,14 +32,14 @@
                              (.format zdt (DateTimeFormatter/ofPattern "yyyy-MM-dd'T'HH:mm:ss'Z'")))))
 
 (defn fetch-latest-canvas [canvas-id]
-  (prn (format "Fetching current state of canvas %s..." canvas-id))
+  (log/info (format "Fetching current state of canvas %s..." canvas-id))
   (->> (xt/q node '(from :drawings {:bind [{:xt/id $id} image-state xt/valid-from]})
              {:args {:id canvas-id}})
        (first)
        (update-valid-from)))
 
 (defn fetch-canvas-history [canvas-id]
-  (prn (format "Fetching historical state of canvas %s..." canvas-id))
+  (log/info (format "Fetching historical state of canvas %s..." canvas-id))
   (->> (xt/q node '(-> (from :drawings {:bind [{:xt/id $id} image-state xt/id xt/valid-from]
                                         :for-valid-time :all-time})
                        (order-by {:val xt/valid-from, :dir :asc :nulls :last}))
@@ -93,7 +94,7 @@
                                   (ring/create-resource-handler {:path "/assets/"})
                                   (ring/create-default-handler)))
                                 {:port port, :join? join})]
-    (println "server running " "on port " port)
+    (log/info "server running " "on port " port)
     server))
 
 (comment
