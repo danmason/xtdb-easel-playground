@@ -18,17 +18,20 @@ Prior to running the webserver application itself, you will need an XTDB node ru
 
 Firstly, pull the latest version of the standalone docker image:
 ```bash
-docker pull docker pull ghcr.io/xtdb/xtdb-standalone-ea
+docker pull ghcr.io/xtdb/xtdb-standalone-ea:latest
 ```
 
 Then, run the docker container, attaching the container storage to a host volume:
 ```bash
 docker run \
   -tip 3000:3000 \
-  -v /path/to/host/dir:/var/lib/xtdb \
+  -v /xtdb-easel/data:/var/lib/xtdb \
   ghcr.io/xtdb/xtdb-standalone-ea
 ```
 
 ## Starting the application
 
-TODO
+To start the webserver, should be as simple as running the following clojure CLI command:
+```bash
+clj -X server/start
+```
