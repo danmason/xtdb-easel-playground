@@ -33,10 +33,10 @@
 
 (defn fetch-latest-canvas [canvas-id]
   (log/info (format "Fetching current state of canvas %s..." canvas-id))
-  (->> (xt/q node '(from :drawings {:bind [{:xt/id $id} image-state xt/valid-from]})
-             {:args {:id canvas-id}})
-       (first)
-       (update-valid-from)))
+  (some->> (xt/q node '(from :drawings {:bind [{:xt/id $id} image-state xt/valid-from]})
+                 {:args {:id canvas-id}})
+           (first)
+           (update-valid-from)))
 
 (defn fetch-canvas-history [canvas-id]
   (log/info (format "Fetching historical state of canvas %s..." canvas-id))
