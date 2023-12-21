@@ -16,10 +16,6 @@
   (:import [java.time ZonedDateTime]
            [java.time.format DateTimeFormatter]))
 
-(defn handle-muuntaja-decode-error [ex _req]
-  {:status 400
-   :body {:error (str "Malformed " (-> ex ex-data :format pr-str) " request.")}})
-
 (def node (xtc/start-client "http://localhost:3000"))
 
 (defn save-canvas-info [request]
