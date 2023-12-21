@@ -35,3 +35,5 @@ To start the webserver, should be as simple as running the following clojure CLI
 ```bash
 clj -X server/start
 ```
+
+After that, the webserver should be running! Go to http://localhost:8000/ to see the homepage.

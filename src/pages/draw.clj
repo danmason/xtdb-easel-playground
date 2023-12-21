@@ -1,4 +1,4 @@
-(ns pages.main
+(ns pages.draw
   (:require [hiccup.core :as hiccup]))
 
 (defn generate-canvas-id []

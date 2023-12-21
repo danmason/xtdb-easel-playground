@@ -10,6 +10,10 @@ body {
     height: 100vh;
 }
 
+.block {
+    display: block;
+}
+
 .canvas {
     border: 2px solid #333;
     margin-top: 20px;
@@ -74,4 +78,43 @@ body {
 .button.disabled:hover {
     background-color: #cccccc;
     cursor: default;
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 800px;
+    padding: 20px;
+    text-align: center;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.canvas-preview {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.canvas-preview img {
+    max-width: 100%;
+    height: auto;
+}
+
+.canvas-id {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.links a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.links a:hover {
+    text-decoration: underline;
 }

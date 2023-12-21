@@ -3,7 +3,8 @@
             [clojure.tools.logging :as log]
             [muuntaja.core :as m]
             [pages
-             [main :as main]
+             [home :as home]
+             [draw :as draw]
              [history :as history]]
             [reitit.dev.pretty :as pretty]
             [reitit.ring :as ring]
@@ -31,6 +32,11 @@
   (update m :xt/valid-from (fn [^ZonedDateTime zdt]
                              (.format zdt (DateTimeFormatter/ofPattern "yyyy-MM-dd'T'HH:mm:ss'Z'")))))
 
+(defn fetch-all-canvases []
+  (log/info (format "Fetching current state of all canvases"))
+  (->> (xt/q node '(from :drawings [xt/id image-state xt/valid-from]))
+       (map update-valid-from)))
+
 (defn fetch-latest-canvas [canvas-id]
   (log/info (format "Fetching current state of canvas %s..." canvas-id))
   (some->> (xt/q node '(from :drawings {:bind [{:xt/id $id} image-state xt/valid-from]})
@@ -52,15 +58,21 @@
 (defn website-router
   []
   (ring/router
-   [["/draw"
-     {:get {:summary "Fetch main page"
+   [["/"
+     {:get {:summary "Fetch main page" 
+            :handler (fn [_request]
+                       (let [all-canvas-states (fetch-all-canvases)]
+                         {:status 200
+                          :body (home/html all-canvas-states)}))}}]
+    ["/draw"
+     {:get {:summary "Fetch drawing page"
             :parameters {:query ::draw-query-params}
             :handler (fn [request]
                        (let [{:keys [canvasId]} (get-in request [:parameters :query])
                              current-canvas-state (when canvasId
                                                     (fetch-latest-canvas canvasId))]
                          {:status 200
-                          :body (main/html {:canvas-id canvasId
+                          :body (draw/html {:canvas-id canvasId
                                             :canvas-state current-canvas-state})}))}}]
     ["/history"
      {:get {:summary "Get all historical info about canvas"
