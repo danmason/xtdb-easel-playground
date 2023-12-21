@@ -1,9 +1,9 @@
 This repo contains code for a small webpage/application that allows you draw on a basic HTML canvas and then view back the timelapse (the history of changes) of the canvas - built against XTDB Version 2.
 
-<p>
+<div style="margin: 0 auto">
   <img src="https://github.com/danmason/xtdb-easel-playground/assets/22668517/78315687-0b05-4732-9f8b-87d5c7b30401" width="400" />
-  <img src="https://github.com/danmason/xtdb-easel-playground/blob/main/timelapse.gif" width="400" /> 
-</p>
+  <img src="https://github.com/danmason/xtdb-easel-playground/blob/main/timelapse.gif" width="270" /> 
+</div>
 
 ## Requirements
 
