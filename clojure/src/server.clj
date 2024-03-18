@@ -23,8 +23,8 @@
 (defn save-canvas-info [request]
   (let [{:keys [canvasId image]} (get-in request [:parameters :body])]
     (log/info (format "Saving edits to canvas %s... " canvasId))
-    (xt/submit-tx node [(xt/put :drawings {:xt/id canvasId
-                                           :image-state image})])
+    (xt/submit-tx node [[:put-docs :drawings {:xt/id canvasId
+                                              :image-state image}]])
     {:status 200
      :body "Canvas Saved!"}))
 
