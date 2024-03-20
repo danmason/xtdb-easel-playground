@@ -1,0 +1,122 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Xtdb, { q, ex } from '@xtdb/xtdb';
+
+const xtdb = new Xtdb('http://localhost:3000');
+const canvasId = Astro.url.searchParams.get('canvasId')
+console.log(`Fetching historical state of canvas ${canvasId}...`);
+const imageStates = await xtdb.query([
+  q.from('drawings', {projectAllCols: false, forValidTime: "allTime"})
+   .binding({"xt$id": canvasId}, "xt$validFrom", "imageState"),
+  q.orderBy({val: ex.sym("xt$validFrom"), dir: "asc", nulls: "last"})
+]);
+---
+
+<Layout title="History/Timelapse">
+    <main>
+        <div class="title">History/Timelapse</div>
+        <canvas id="timelapseCanvas" width="500" height="500"></canvas>
+        <div class="state-time">State at: --</div>
+        <div class="controls">
+            <div class="button" id="stepBackButton">Step Back</div>
+            <div class="button" id="restartButton">(Re) Start Timelapse</div>
+            <div class="button" id="stepForwardButton">Step Forward</div>
+        </div>
+    </main>
+</Layout>
+
+<script type="module" define:vars={{ imageStates }}>
+  function initializeCanvas() {
+      console.log("Initializing Canvas...")
+
+      var currentIndex = 0;
+      var timelapseInterval;
+      var stateTimeDiv = document.querySelector('.state-time');
+
+      function updateButtonStates() {
+          var stepBackButton = document.getElementById('stepBackButton');
+          var stepForwardButton = document.getElementById('stepForwardButton');
+      
+          if (currentIndex <= 0) {
+              stepBackButton.classList.add('disabled');
+          } else {
+              stepBackButton.classList.remove('disabled');
+          }
+      
+          if (currentIndex >= imageStates.length - 1) {
+              stepForwardButton.classList.add('disabled');
+          } else {
+              stepForwardButton.classList.remove('disabled');
+          }
+      }    
+      
+      function drawCurrentImage() {
+          var canvas = document.getElementById('timelapseCanvas');
+          var context = canvas.getContext('2d');
+          var image = new Image();
+          image.onload = function() {
+              context.clearRect(0, 0, canvas.width, canvas.height);
+              context.drawImage(image, 0, 0, canvas.width, canvas.height);
+              // Update timestamp under canvas
+              var timestamp = imageStates[currentIndex]['xt/valid-from'];
+              stateTimeDiv.textContent = 'State at: ' + timestamp;
+          };
+          image.src = imageStates[currentIndex]['image-state'];
+      }
+
+      function stepForward() {
+          if (currentIndex < imageStates.length - 1) {
+              currentIndex++;
+              drawCurrentImage();
+          }
+          updateButtonStates();
+      }
+      
+      function stepBackward() {
+          if (currentIndex > 0) {
+              currentIndex--;
+              drawCurrentImage();
+          }
+          updateButtonStates();
+      }
+
+      function startTimelapse() {
+          clearInterval(timelapseInterval);
+          currentIndex = 0;
+          drawCurrentImage();
+          timelapseInterval = setInterval(function() {
+              if (currentIndex >= imageStates.length - 1) {
+                  clearInterval(timelapseInterval);
+                  updateButtonStates();
+              } else {
+                stepForward();
+              }
+          }, 200); // Change every 0.2 seconds
+          updateButtonStates();
+      }
+      
+      document.getElementById('restartButton').addEventListener('click', function() {
+          currentIndex = 0;
+          startTimelapse();
+      });
+      
+      document.getElementById('stepBackButton').addEventListener('click', function() {
+          clearInterval(timelapseInterval);
+          stepBackward();
+      });
+      
+      document.getElementById('stepForwardButton').addEventListener('click', function() {
+          clearInterval(timelapseInterval);
+          stepForward();
+      });    
+
+      drawCurrentImage();
+      updateButtonStates();
+  }
+
+
+  window.onload = function() {
+      initializeCanvas();
+  };
+</script>
+
