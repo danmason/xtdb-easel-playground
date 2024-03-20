@@ -1,0 +1,32 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Xtdb, { q, ex } from '@xtdb/xtdb'
+
+const xtdb = new Xtdb('http://localhost:3000');
+console.log("Fetching current state of all canvas... ");
+const canvases = await xtdb.query([
+	q.from('drawings')
+	 .binding(["xt$id", "imageState"]),
+])
+console.log(canvases)
+---
+<Layout title="Easel Playground">
+	<main>
+		<h1 class="title"> Easel Playground </h1>
+    <a class="button" href="/draw" target="_blank"> Create a new easel! </a>
+    <h2>Saved Easels</h2>
+    <div class="grid">
+      {canvases && canvases.map((item) => (
+        <div class="canvas-preview">
+          <img src={item['image-state']} alt="Canvas Preview" />
+          <div class="canvas-id">Canvas ID: {item['xt/id']}</div>
+          <div class="links">
+            <a href={`/draw?canvasId=${item['xt/id']}`} target="_blank">Edit</a>
+             | 
+            <a href={`/history?canvasId=${item['xt/id']}`} target="_blank">View History</a>
+          </div>
+        </div>
+      ))}
+    </div>
+	</main>
+</Layout>
