@@ -6,9 +6,8 @@ const xtdb = new Xtdb('http://localhost:3000');
 console.log("Fetching current state of all canvas... ");
 const canvases = await xtdb.query([
 	q.from('drawings')
-	 .binding(["xt$id", "imageState"]),
+	 .binding("xt$id", "imageState"),
 ])
-console.log(canvases)
 ---
 <Layout title="Easel Playground">
 	<main>

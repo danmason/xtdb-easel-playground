@@ -11,7 +11,7 @@ if(canvasId) {
 
 	const canvasResults = await xtdb.query([
 		q.from('drawings')
-		 .binding([{"xt$id": canvasId}, "xt$validFrom", "imageState"]),
+		 .binding({"xt$id": canvasId}, "xt$validFrom", "imageState"),
 	])
 
 	if(canvasResults.length > 0) {
