@@ -7,10 +7,11 @@ This repo contains code for a small webpage/application that allows you draw on 
 
 ## Requirements
 
-The webserver is run using npm & astro, and for XTDB we make use of the `xtdb-standalone-ea` docker image, so you will need the following to run the application:
+The webserver is run using clojure, and for XTDB we make use of the `xtdb-standalone-ea` docker image, so you will need the following to run the application:
 
-- `npm`
-- `Docker`
+- Clojure CLI
+- Java (JDK 17+ recommended by XTDB)
+- Docker
 
 ## Starting XTDB
 
@@ -33,9 +34,9 @@ docker run \
 
 ## Starting the application
 
-Some commands for building & running the webpages using astro:
+To start the webserver, should be as simple as running the following clojure CLI command:
+```bash
+clj -X server/start
+```
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+After that, the webserver should be running! Go to http://localhost:8000/ to see the homepage.

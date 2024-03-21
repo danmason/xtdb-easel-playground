@@ -1,0 +1,49 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Xtdb, { q, ex } from '@xtdb/xtdb'
+
+const xtdb = new Xtdb('http://localhost:3000');
+var lastEdited = null;
+var imageState: string | null = null;
+const canvasId = Astro.url.searchParams.get('canvasId')
+if(canvasId) {
+	console.log("Fetching current state of canvas... ", canvasId);
+
+	const canvasResults = await xtdb.query([
+		q.from('drawings')
+		 .binding({"xt$id": canvasId}, "xt$validFrom", "imageState"),
+	])
+
+	if(canvasResults.length > 0) {
+		imageState = canvasResults[0]["image-state"];
+		lastEdited = canvasResults[0]["xt/valid-from"];
+	}
+}
+
+---
+<Layout title="Drawing Canvas">
+	<main>
+		<div class="title">Draw!</div>
+		<div class="subtitle">Draw something and we'll save your history.</div>
+
+		<canvas class="canvas" id="drawingCanvas" width="500" height="500"></canvas>
+		<div class="last-edited">Last Edited:
+			<span id="lastEdited"> { lastEdited ? lastEdited : "Not yet saved" } </span>
+		</div>
+		<a class="button" href={`/history?canvasId=${canvasId}`}>History/Timelapse</a>
+	</main>
+</Layout>
+
+<script type="module" src="src/scripts/draw.ts" is:inline></script> 
+<script define:vars={{ imageState }}>
+console.log("Image state: ", imageState);
+	if(imageState != null) {
+		const canvas = document.getElementById('drawingCanvas');
+		const ctx = canvas.getContext('2d');
+		const img = new Image();
+		img.onload = () => {
+			ctx?.drawImage(img, 0, 0);
+		}
+		img.src = imageState;
+	}
+</script>
